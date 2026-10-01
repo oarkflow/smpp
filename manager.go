@@ -15,8 +15,8 @@ import (
 	"unicode/utf8"
 
 	"github.com/oarkflow/errors"
-	"github.com/oarkflow/log"
 	"github.com/oarkflow/xid"
+	"github.com/oarkflow/zlog"
 	maps "github.com/oarkflow/xsync"
 	"golang.org/x/time/rate"
 
@@ -397,9 +397,9 @@ func (m *Manager) SetupConnection() error {
 				for payload, t := range m.messagesToRetry {
 					switch payload := payload.(type) {
 					case Message:
-						log.Warn().Bool("resend", true).Str("message_id", payload.ID).Msg("Resending message")
+						zlog.Warn("Resending message", zlog.Bool("resend", true), zlog.String("message_id", payload.ID))
 					case *Message:
-						log.Warn().Bool("resend", true).Str("message_id", payload.ID).Msg("Resending message")
+						zlog.Warn("Resending message", zlog.Bool("resend", true), zlog.String("message_id", payload.ID))
 					}
 					_, err := m.Send(payload, t.ID)
 					if err == nil {
@@ -609,7 +609,7 @@ func (m *Manager) Close(connectionId ...string) error {
 			if err != nil {
 				return err
 			}
-			log.Info().Str("conn_id", con.ID).Msg("SMPP Connection Closing")
+			zlog.Info("SMPP Connection Closing", zlog.String("conn_id", con.ID))
 		}
 	} else {
 		for _, conn := range m.connections {
@@ -617,7 +617,7 @@ func (m *Manager) Close(connectionId ...string) error {
 			if err != nil {
 				return err
 			}
-			log.Info().Str("conn_id", conn.ID).Msg("SMPP Connection Closing")
+			zlog.Info("SMPP Connection Closing", zlog.String("conn_id", conn.ID))
 		}
 	}
 
